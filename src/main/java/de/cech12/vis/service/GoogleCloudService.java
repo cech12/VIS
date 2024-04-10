@@ -132,7 +132,7 @@ public class GoogleCloudService implements IOCRService, ITTSService {
             voiceComboBox.setSelectedIndex(0);
         });
 
-        JLabel speedLabel = new JLabel("Select the voice speed (%)");
+        JLabel speedLabel = new JLabel("Select the voice speed");
         speedLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         JSlider speedSlider = new JSlider(SwingConstants.HORIZONTAL, 25, 400, (int) (speed * 100D));
         speedSlider.setMaximumSize(voiceComboBox.getPreferredSize());
@@ -144,6 +144,9 @@ public class GoogleCloudService implements IOCRService, ITTSService {
                 throw new RuntimeException(e);
             }
         });
+        JButton speedButton = new JButton("Reset Speed");
+        speedButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        speedButton.addActionListener(e -> speedSlider.setValue(100));
 
         JLabel pitchLabel = new JLabel("Select the voice pitch");
         pitchLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -157,15 +160,23 @@ public class GoogleCloudService implements IOCRService, ITTSService {
                 throw new RuntimeException(e);
             }
         });
+        JButton pitchButton = new JButton("Reset Pitch");
+        pitchButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pitchButton.addActionListener(e -> pitchSlider.setValue(0));
 
         panel.add(languageLabel);
         panel.add(languageComboBox);
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
         panel.add(voiceLabel);
         panel.add(voiceComboBox);
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
         panel.add(speedLabel);
         panel.add(speedSlider);
+        panel.add(speedButton);
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
         panel.add(pitchLabel);
         panel.add(pitchSlider);
+        panel.add(pitchButton);
     }
 
     @Override

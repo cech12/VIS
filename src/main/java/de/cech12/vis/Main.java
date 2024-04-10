@@ -20,7 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.net.URI;
 
 public class Main {
 
@@ -56,7 +55,7 @@ public class Main {
 
     private static void createWindow() throws Exception {
         JFrame frame = new JFrame(APPLICATION_NAME);
-        frame.setSize(400,300);
+        frame.setSize(400,400);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel panel = new JPanel();
@@ -66,6 +65,8 @@ public class Main {
 
         ocrService.addOCRFrameConfiguration(panel);
         ttsService.addTTSFrameConfiguration(panel);
+
+        panel.add(Box.createRigidArea(new Dimension(0, 30)));
 
         button = new JButton();
         setButtonTextToSpeechConversion();

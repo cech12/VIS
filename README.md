@@ -18,7 +18,7 @@ With the push of a button, a voice output can be played from an image on the cli
 
 ## Requirements
 
-- Java Development Kit (JDK) 17 or higher
+- Java Development Kit (JDK) (17 or higher recommended)
 - Internet connection for utilizing OCR and TTS services
 - Service Account of a Google Cloud Project with enabled Vision API & Text-To-Speech API https://console.cloud.google.com/
 
@@ -61,7 +61,7 @@ https://cloud.google.com/iam/docs/service-account-overview
 
 2. Once the application is running, you can configure your preferred language & voice
 3. Copy an image to the clipboard. (You can use Tools like Windows Snipping Tool to copy something on your screen)
-4. Hit the "Read Image from Clipboard" button and her the voice
+4. Hit the "Read Image from Clipboard" button and hear the voice
 5. You can hit the "Stop Speech" button to stop the voice output
 
 ## Configuration
