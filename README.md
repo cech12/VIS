@@ -15,10 +15,10 @@ With the push of a button, a voice output can be played from an image on the cli
 - Google Cloud Vision API - https://cloud.google.com/vision
 
 ### TTS Services
-- Google Cloud Text-To-Speech AI - https://cloud.google.com/text-to-speech
+- Google Cloud Text-To-Speech API - https://cloud.google.com/text-to-speech
 
 ### Translation Services
-- Google Cloud Translation - https://cloud.google.com/translate
+- Google Cloud Translation API - https://cloud.google.com/translate
 
 ## Requirements
 
@@ -47,8 +47,8 @@ https://cloud.google.com/resource-manager/docs/creating-managing-projects
 
 Enable following APIs:
 - Google Cloud Vision API
-- Google Cloud Text-To-Speech AI
-- (optional) Google Cloud Translation
+- Google Cloud Text-To-Speech API
+- (optional) Google Cloud Translation API
 
 4. Setup Service Account for Google Cloud Project
 
