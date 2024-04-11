@@ -182,6 +182,7 @@ public class Main {
             playSpeech(speech);
         } catch (Exception ex) {
             showErrorMessage("Failed to run conversion: " + ex.getMessage());
+            setButtonTextToSpeechConversion();
             LOGGER.error("Failed to run conversion.", ex);
         }
     }
