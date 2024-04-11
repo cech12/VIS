@@ -7,6 +7,8 @@ public interface ITTSService {
 
     InputStream getSpeechFromText(String text) throws Exception;
 
+    String getTargetLanguage() throws Exception;
+
     void addTTSFrameConfiguration(JPanel panel) throws Exception;
 
 }

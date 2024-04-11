@@ -3,6 +3,7 @@ package de.cech12.vis;
 import de.cech12.vis.service.GoogleCloudService;
 import de.cech12.vis.service.IOCRService;
 import de.cech12.vis.service.ITTSService;
+import de.cech12.vis.service.ITranslationService;
 import de.cech12.vis.utils.ConfigUtils;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
@@ -26,10 +27,14 @@ public class Main {
     public static final String APPLICATION_NAME = "VIS";
     public static final Logger LOGGER = LogManager.getLogger(Main.class);
 
+    public static final String CONFIG_TRANSLATION_ACTIVE = "main.translation.active";
+
     private static IOCRService ocrService;
+    private static ITranslationService translationService;
     private static ITTSService ttsService;
 
     private static JButton button;
+    private static JLabel uiMessage;
     private static Thread speechThread = null;
     private static Player player = null;
 
@@ -45,6 +50,7 @@ public class Main {
             ConfigUtils.initConfig(configDir);
             GoogleCloudService gcs = new GoogleCloudService(configDir);
             ocrService = gcs;
+            translationService = gcs;
             ttsService = gcs;
             createWindow();
         } catch (Exception ex) {
@@ -55,7 +61,7 @@ public class Main {
 
     private static void createWindow() throws Exception {
         JFrame frame = new JFrame(APPLICATION_NAME);
-        frame.setSize(400,400);
+        frame.setSize(400,480);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel panel = new JPanel();
@@ -65,8 +71,22 @@ public class Main {
 
         ocrService.addOCRFrameConfiguration(panel);
         ttsService.addTTSFrameConfiguration(panel);
+        translationService.addTranslationFrameConfiguration(panel);
 
         panel.add(Box.createRigidArea(new Dimension(0, 30)));
+
+        JCheckBox translationCheckbox = new JCheckBox("Translation active", Boolean.parseBoolean(ConfigUtils.getPropertyOrDefault(CONFIG_TRANSLATION_ACTIVE, "false")));
+        translationCheckbox.setAlignmentX(Component.CENTER_ALIGNMENT);
+        translationCheckbox.addActionListener(e -> {
+            try {
+                ConfigUtils.setProperty(CONFIG_TRANSLATION_ACTIVE, String.valueOf(translationCheckbox.isSelected()));
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        panel.add(translationCheckbox);
+
+        panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
         button = new JButton();
         setButtonTextToSpeechConversion();
@@ -74,11 +94,18 @@ public class Main {
         button.addActionListener(e -> selectionButtonPressed());
         panel.add(button);
 
+        panel.add(Box.createRigidArea(new Dimension(0, 5)));
+
+        uiMessage = new JLabel(" ");
+        uiMessage.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(uiMessage);
+
         panel.add(Box.createVerticalGlue()); //centered
         frame.setVisible(true);
     }
 
     private static void selectionButtonPressed() {
+        resetShownMessage();
         if (speechThread != null && speechThread.isAlive() && !speechThread.isInterrupted()) {
             stopSpeech();
         } else {
@@ -94,27 +121,47 @@ public class Main {
         button.setText("Stop Speech");
     }
 
+    public static void resetShownMessage() {
+        uiMessage.setText("");
+    }
+
+    public static void showInfoMessage(String message) {
+        LOGGER.info(message);
+        uiMessage.setText("Info: " + message);
+    }
+
+    public static void showErrorMessage(String message) {
+        LOGGER.error(message);
+        uiMessage.setText("Error:" + message);
+    }
+
     private static void runImageToSpeechConversion() {
         LOGGER.info("Run image to speech conversion.");
         try {
             InputStream imageStream = getImageFromClipboard();
             if (imageStream == null) {
-                LOGGER.error("No picture data found in clipboard.");
+                showInfoMessage("No image was found on the clipboard.");
                 return;
             }
 
             String text = ocrService.getTextFromImage(imageStream);
             LOGGER.info("Generated text: {}", text);
 
+            String targetLanguage = ttsService.getTargetLanguage();
+            if (Boolean.parseBoolean(ConfigUtils.getProperty(CONFIG_TRANSLATION_ACTIVE)) && translationService.isTranslationAvailableForLanguage(targetLanguage)) {
+                text = translationService.getTranslationOfText(targetLanguage, text);
+            }
+
             InputStream speech = ttsService.getSpeechFromText(text);
 
             if (speech == null) {
-                LOGGER.error("No speech was generated.");
+                showErrorMessage("No speech was generated.");
                 return;
             }
 
             playSpeech(speech);
         } catch (Exception ex) {
+            showErrorMessage("Failed to run conversion: " + ex.getMessage());
             LOGGER.error("Failed to run conversion.", ex);
         }
     }
