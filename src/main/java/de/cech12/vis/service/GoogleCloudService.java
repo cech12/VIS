@@ -292,7 +292,6 @@ public class GoogleCloudService implements IOCRService, ITranslationService, ITT
 
         StringBuilder result = new StringBuilder();
 
-        //imagetospeech-419808
         LocationName parent = LocationName.of(ConfigUtils.getProperty(CONFIG_PROJECT_ID), "global");
 
         TranslationServiceSettings settings = TranslationServiceSettings.newBuilder().setCredentialsProvider(credentialsProvider).build();

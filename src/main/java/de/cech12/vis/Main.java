@@ -98,6 +98,7 @@ public class Main {
 
         uiMessage = new JLabel(" ");
         uiMessage.setAlignmentX(Component.CENTER_ALIGNMENT);
+        uiMessage.setForeground(Color.RED);
         panel.add(uiMessage);
 
         panel.add(Box.createVerticalGlue()); //centered
@@ -109,12 +110,29 @@ public class Main {
         if (speechThread != null && speechThread.isAlive() && !speechThread.isInterrupted()) {
             stopSpeech();
         } else {
-            runImageToSpeechConversion();
+            deactivateButton();
+            setButtonTextToWaiting();
+            new Thread(() -> {
+                runImageToSpeechConversion();
+                activateButton();
+            }).start();
         }
+    }
+
+    private static void deactivateButton() {
+        button.setEnabled(false);
+    }
+
+    private static void activateButton() {
+        button.setEnabled(true);
     }
 
     private static void setButtonTextToSpeechConversion() {
         button.setText("Read Image from Clipboard");
+    }
+
+    private static void setButtonTextToWaiting() {
+        button.setText("Speech is generating...");
     }
 
     private static void setButtonTextToStopSpeech() {
@@ -122,7 +140,7 @@ public class Main {
     }
 
     public static void resetShownMessage() {
-        uiMessage.setText("");
+        uiMessage.setText(" ");
     }
 
     public static void showInfoMessage(String message) {
@@ -141,6 +159,7 @@ public class Main {
             InputStream imageStream = getImageFromClipboard();
             if (imageStream == null) {
                 showInfoMessage("No image was found on the clipboard.");
+                setButtonTextToSpeechConversion();
                 return;
             }
 
@@ -156,6 +175,7 @@ public class Main {
 
             if (speech == null) {
                 showErrorMessage("No speech was generated.");
+                setButtonTextToSpeechConversion();
                 return;
             }
 
